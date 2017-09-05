@@ -6,7 +6,9 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "JSONPath": "^0.11.2",
     "body-parser": "~1.17.1",
+    "cachedfs": "^0.3.3",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.4",
     "debug": "~2.6.3",
@@ -14,6 +16,7 @@
     "jade": "~1.11.0",
     "morgan": "~1.8.1",
     "mysql": "^2.14.1",
-    "serve-favicon": "~2.4.2"
+    "serve-favicon": "~2.4.2",
+    "xml2js": "^0.4.19"
   }
 }

@@ -1,19 +1,35 @@
-var db = require('../dbconnection'); //reference of dbconnection.js  
+var xml2js = require('xml2js');
+var JSONPath = require("JSONPath");
+var CachedFs = require('cachedfs'),
+fs = new CachedFs();
+var parser = new xml2js.Parser();
+
 var Sdn = {  
     getAllSdns: function(callback) {  
-        return db.query("Select sdn.*, a.address,a.city,a.country,a.add_remarks,alt.name,alt.type,alt.remarks,c.comments  from sdn LEFT JOIN address as a ON sdn.id = a.sdn_id LEFT JOIN alt ON sdn.id = alt.sdn_id LEFT JOIN comment as c  ON sdn.id = c.sdn_id", callback);  
+        return query("$.sdnList.sdnEntry",{},callback);
     },  
     getSdnById: function(id, callback) {  
-        return db.query("SELECT sdn.*, a.address,a.city,a.country,a.add_remarks,alt.name,alt.type,alt.remarks,c.comments  FROM sdn LEFT JOIN address as a ON sdn.id = a.sdn_id LEFT JOIN alt ON sdn.id = alt.sdn_id LEFT JOIN comment as c  ON sdn.id = c.sdn_id where sdn.id=?", [id], callback);  
-    },  
-    addSdn: function(Sdn, callback) {  
-        return db.query("Insert into sdn values(?,?,?)", [Sdn.Id, Sdn.Title, Sdn.Status], callback);  
-    },  
-    deleteSdn: function(id, callback) {  
-        return db.query("delete from sdn where Id=?", [id], callback);  
-    },  
-    updateSdn: function(id, Sdn, callback) {  
-        return db.query("update sdn set Title=?,Status=? where Id=?", [Sdn.Title, Sdn.Status, id], callback);  
-    }  
-};  
+        var sandbox = {
+            filter: function (arg) {
+                return arg.uid == id;
+            }
+        }
+
+        return query("$.sdnList.sdnEntry[?(filter(@))]",sandbox,callback);
+    }
+};
+
+function query(expression,sandbox,callback){
+    fs.readFile('sdn.xml', function(err, data) {
+        parser.parseString(data, function (err, result) {
+         var matches = JSONPath({
+            json : result,
+            path : expression,
+            sandbox :  sandbox
+        });
+            return callback(err,matches);
+        });
+    });
+
+}  
 module.exports = Sdn;  

@@ -14,7 +14,7 @@ router.get('/:id?', function(req, res, next) {
     } else {  
         Sdn.getAllSdns(function(err, rows) {  
             if (err) {  
-                res.json(err);  
+               console.log("An error has occured. Abort everything!"); 
             } else {  
                 res.json(rows);  
             }  
